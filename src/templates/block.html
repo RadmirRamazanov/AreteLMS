@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}{{ block_info.name }} — Arete LMS{% endblock %}
+
+{% block extra_styles %}
+        .block-page { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem; }
+
+        .breadcrumb {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2.5rem;
+        }
+        .breadcrumb a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s; }
+        .breadcrumb a:hover { color: var(--accent-secondary); }
+        .breadcrumb-sep { color: var(--border-color); }
+
+        .block-header {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;
+            position: relative; overflow: hidden;
+        }
+        .block-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+        .block-header-top { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .block-header-icon {
+            width: 72px; height: 72px; border-radius: 18px; font-size: 2.2rem;
+            background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(167,139,250,0.1));
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .block-header-info h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .block-header-info p { color: var(--text-secondary); font-size: 1rem; }
+
+        .block-progress-wrap { display: flex; align-items: center; gap: 1rem; }
+        .block-progress-bar {
+            flex: 1; height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;
+        }
+        .block-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px; transition: width 1s ease;
+        }
+        .block-progress-text { font-size: 0.875rem; color: var(--text-secondary); white-space: nowrap; }
+
+        /* Tasks List */
+        .tasks-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .task-item {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 1.5rem 1.75rem;
+            display: flex; align-items: center; gap: 1.25rem;
+            text-decoration: none; color: inherit; transition: all 0.3s;
+        }
+        .task-item:hover { border-color: var(--accent-primary); background: var(--bg-card-hover); transform: translateX(4px); }
+        .task-item.solved { border-color: rgba(34, 197, 94, 0.3); }
+
+        .task-status {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+            border: 2px solid var(--border-color); background: var(--bg-secondary);
+        }
+        .task-status.done {
+            border-color: var(--success); background: rgba(34, 197, 94, 0.1); color: var(--success);
+        }
+        .task-status.pending { color: var(--text-muted); }
+
+        .task-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); min-width: 1.5rem; }
+
+        .task-info { flex: 1; }
+        .task-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .task-meta { display: flex; align-items: center; gap: 0.75rem; }
+
+        .task-type-badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+            background: rgba(139, 92, 246, 0.1); color: var(--accent-secondary);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .task-type-badge.type-sql { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border-color: rgba(245, 158, 11, 0.2); }
+        .task-type-badge.type-html { background: rgba(249, 115, 22, 0.1); color: #fb923c; border-color: rgba(249, 115, 22, 0.2); }
+        .task-type-badge.type-answer { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.2); }
+
+        .difficulty-badge {
+            font-size: 0.75rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 6px;
+        }
+        .difficulty-easy { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+        .difficulty-medium { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+        .difficulty-hard { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+
+        .task-arrow {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); flex-shrink: 0; transition: all 0.3s;
+        }
+        .task-item:hover .task-arrow { background: var(--accent-primary); color: white; transform: translateX(3px); }
+
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+        .empty-state svg { width: 60px; height: 60px; margin-bottom: 1rem; opacity: 0.3; }
+
+        .login-prompt {
+            background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 14px; padding: 1.5rem; text-align: center; margin-top: 2rem;
+            color: var(--text-secondary); font-size: 0.9rem;
+        }
+        .login-prompt a { color: var(--accent-secondary); text-decoration: none; font-weight: 500; }
+        .login-prompt a:hover { text-decoration: underline; }
+
+        .type-labels { 'python': 'Python', 'sql': 'SQL', 'html': 'HTML', 'answer': 'Ответ' }
+{% endblock %}
+
+{% block content %}
+    <div class="block-page">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{{ url_for('index') }}">Главная</a>
+            <span class="breadcrumb-sep">›</span>
+            <a href="{{ url_for('index') }}#blocks">Блоки</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ block_info.name }}</span>
+        </div>
+
+        <!-- Block Header -->
+        <div class="block-header">
+            <div class="block-header-top">
+                <div class="block-header-icon">{{ block_info.icon }}</div>
+                <div class="block-header-info">
+                    <h1>{{ block_info.name }}</h1>
+                    <p>{{ block_info.description }}</p>
+                </div>
+            </div>
+            <div class="block-progress-wrap">
+                <div class="block-progress-bar">
+                    <div class="block-progress-fill" style="width: {% if total > 0 %}{{ (solved_count / total * 100)|int }}{% else %}0{% endif %}%"></div>
+                </div>
+                <span class="block-progress-text">
+                    {% if current_user.is_authenticated %}
+                        {{ solved_count }} / {{ total }} решено
+                    {% else %}
+                        {{ total }} задач
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="tasks-list">
+            {% for td in tasks_data %}
+            {% set t = td.task %}
+            <a href="{{ url_for('task', task_id=t.id) }}" class="task-item {% if td.solved %}solved{% endif %}">
+                <div class="task-status {% if td.solved %}done{% else %}pending{% endif %}">
+                    {% if td.solved %}✓{% else %}○{% endif %}
+                </div>
+                <span class="task-num">{{ loop.index }}</span>
+                <div class="task-info">
+                    <div class="task-title">{{ t.title }}</div>
+                    <div class="task-meta">
+                        <span class="task-type-badge type-{{ t.task_type }}">
+                            {% if t.task_type == 'python' %}🐍 Python
+                            {% elif t.task_type == 'sql' %}🗄️ SQL
+                            {% elif t.task_type == 'html' %}🌐 HTML
+                            {% elif t.task_type == 'answer' %}💡 Ответ
+                            {% else %}{{ t.task_type }}{% endif %}
+                        </span>
+                        <span class="difficulty-badge difficulty-{{ t.difficulty }}">
+                            {% if t.difficulty == 'easy' %}Лёгкая
+                            {% elif t.difficulty == 'medium' %}Средняя
+                            {% elif t.difficulty == 'hard' %}Сложная
+                            {% else %}{{ t.difficulty }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="task-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+            </a>
+            {% else %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+                <p>В этом блоке пока нет задач</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not current_user.is_authenticated %}
+        <div class="login-prompt">
+            <a href="{{ url_for('login') }}">Войдите</a> или <a href="{{ url_for('register') }}">зарегистрируйтесь</a>, чтобы отслеживать прогресс и сохранять решения.
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

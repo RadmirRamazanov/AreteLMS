@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Arete LMS{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-card: #18181b;
+            --bg-card-hover: #1f1f23;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #a78bfa;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --border-color: #27272a;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none; z-index: 0;
+        }
+
+        .glow-orb {
+            position: fixed; border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            filter: blur(80px); pointer-events: none; z-index: 0;
+        }
+        .glow-orb-1 { width: 600px; height: 600px; top: -200px; right: -200px; animation: float 20s ease-in-out infinite; }
+        .glow-orb-2 { width: 400px; height: 400px; bottom: -200px; left: -100px; animation: float 25s ease-in-out infinite reverse; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 11, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.75rem;
+            text-decoration: none; color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem;
+        }
+
+        .logo-text { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .nav-buttons { display: flex; gap: 1rem; align-items: center; }
+
+        .nav-user {
+            display: flex; align-items: center; gap: 1rem;
+        }
+
+        .nav-username {
+            font-size: 0.9rem; color: var(--text-secondary);
+        }
+
+        .btn {
+            padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.9rem;
+            font-weight: 600; text-decoration: none; transition: all 0.3s;
+            cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+
+        .btn-ghost { background: transparent; color: var(--text-secondary); }
+        .btn-ghost:hover { color: var(--text-primary); background: var(--bg-card); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white; box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); }
+
+        .btn-outline {
+            background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);
+        }
+        .btn-outline:hover { background: var(--bg-card); border-color: var(--accent-primary); }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+        main { position: relative; z-index: 1; padding-top: 70px; }
+
+        footer {
+            position: relative; z-index: 1;
+            padding: 2.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .footer-text { color: var(--text-muted); font-size: 0.875rem; }
+
+        .footer-links { display: flex; gap: 2rem; }
+        .footer-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--text-primary); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .footer-container { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <div class="logo-icon">A</div>
+                <span class="logo-text">Arete</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}#blocks">Блоки</a></li>
+                <li><a href="{{ url_for('index') }}#features">Возможности</a></li>
+                <li><a href="{{ url_for('index') }}#about">О платформе</a></li>
+            </ul>
+            <div class="nav-buttons">
+                {% if current_user.is_authenticated %}
+                    <div class="nav-user">
+                        <span class="nav-username">{{ current_user.first_name }} {{ current_user.last_name }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-ghost">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-ghost">Войти</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Начать бесплатно</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <p class="footer-text">© 2024 Arete LMS. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="#">Документация</a>
+                <a href="#">Поддержка</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
