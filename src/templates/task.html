@@ -1,70 +1,152 @@
 {% extends "base.html" %}
 {% block title %}{{ task.title }} — Arete LMS{% endblock %}
 
-{% block extra_styles %}
-        .task-page { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/task.css') }}">
+{% endblock %}
 
+{% if false %}
+        .task-page { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+
+        /* ─── Breadcrumb ─── */
         .breadcrumb {
-            display: flex; align-items: center; gap: 0.5rem;
-            font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2.5rem;
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.8rem; color: var(--text-muted);
+            margin-bottom: 2rem; letter-spacing: 0.01em;
         }
-        .breadcrumb a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s; }
+        .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
         .breadcrumb a:hover { color: var(--accent-secondary); }
-        .breadcrumb-sep { color: var(--border-color); }
+        .breadcrumb-sep { opacity: 0.4; }
 
-        /* Task Card */
+        /* ─── Verdict Banner (Yandex-style) ─── */
+        .verdict-banner {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1.1rem 1.5rem;
+            border-radius: 14px; border: 1px solid transparent;
+            margin-bottom: 1.5rem;
+        }
+        .verdict-banner.accepted {
+            background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.25);
+        }
+        .verdict-banner.rejected {
+            background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.22);
+        }
+        .verdict-icon {
+            flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .verdict-banner.accepted .verdict-icon { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .verdict-banner.rejected .verdict-icon { background: rgba(239,68,68,0.12); color: #f87171; }
+        .verdict-info { flex: 1; }
+        .verdict-label {
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text-muted); margin-bottom: 0.15rem;
+        }
+        .verdict-text { font-size: 1rem; font-weight: 700; }
+        .verdict-banner.accepted .verdict-text { color: #4ade80; }
+        .verdict-banner.rejected .verdict-text { color: #f87171; }
+        .verdict-code-toggle {
+            font-size: 0.8rem; color: var(--text-muted); cursor: pointer;
+            border: 1px solid var(--border-color); background: var(--bg-secondary);
+            padding: 0.35rem 0.85rem; border-radius: 8px; transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .verdict-code-toggle:hover { color: var(--text-primary); border-color: var(--accent-primary); }
+        .prev-code-wrap {
+            display: none; margin-top: 0.875rem;
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 1rem;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+            color: var(--text-secondary); white-space: pre-wrap; max-height: 180px; overflow-y: auto;
+        }
+        .prev-code-wrap.open { display: block; }
+
+        /* ─── Task Card ─── */
         .task-card {
             background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;
+            border-radius: 20px; padding: 2.25rem 2.5rem; margin-bottom: 1.5rem;
             position: relative; overflow: hidden;
         }
         .task-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
             background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
         }
 
-        .task-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-        .task-title-area h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.75rem; }
+        /* ─── Task Header ─── */
+        .task-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .task-title-area { flex: 1; }
+        .task-title-area h1 {
+            font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.75rem;
+        }
         .task-badges { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
         .badge {
             display: inline-flex; align-items: center; gap: 0.3rem;
-            padding: 0.25rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+            padding: 0.2rem 0.65rem; border-radius: 7px; font-size: 0.75rem; font-weight: 600;
+            border: 1px solid transparent;
         }
-        .badge-type { background: rgba(139,92,246,0.1); color: var(--accent-secondary); border: 1px solid rgba(139,92,246,0.2); }
-        .badge-type.sql { background: rgba(245,158,11,0.1); color: #fbbf24; border-color: rgba(245,158,11,0.2); }
-        .badge-type.html { background: rgba(249,115,22,0.1); color: #fb923c; border-color: rgba(249,115,22,0.2); }
-        .badge-type.answer { background: rgba(34,197,94,0.1); color: #4ade80; border-color: rgba(34,197,94,0.2); }
-        .badge-easy { background: rgba(34,197,94,0.1); color: #4ade80; }
-        .badge-medium { background: rgba(245,158,11,0.1); color: #fbbf24; }
-        .badge-hard { background: rgba(239,68,68,0.1); color: #f87171; }
+        .badge-type-python { background: rgba(139,92,246,0.1); color: #c4b5fd; border-color: rgba(139,92,246,0.25); }
+        .badge-type-sql    { background: rgba(245,158,11,0.1);  color: #fbbf24; border-color: rgba(245,158,11,0.25); }
+        .badge-type-html   { background: rgba(249,115,22,0.1);  color: #fb923c; border-color: rgba(249,115,22,0.25); }
+        .badge-type-answer { background: rgba(34,197,94,0.1);   color: #4ade80; border-color: rgba(34,197,94,0.25); }
+        .badge-easy   { background: rgba(34,197,94,0.08);  color: #4ade80; border-color: rgba(34,197,94,0.15); }
+        .badge-medium { background: rgba(245,158,11,0.08); color: #fbbf24; border-color: rgba(245,158,11,0.15); }
+        .badge-hard   { background: rgba(239,68,68,0.08);  color: #f87171; border-color: rgba(239,68,68,0.15); }
 
-        .task-nav { display: flex; gap: 0.5rem; }
-        .nav-task-btn {
-            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-color);
-            background: var(--bg-secondary); color: var(--text-secondary); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; text-decoration: none;
-            transition: all 0.3s;
+        .task-nav-btn {
+            width: 36px; height: 36px; border-radius: 9px;
+            border: 1px solid var(--border-color); background: var(--bg-secondary);
+            color: var(--text-secondary); cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: all 0.2s;
         }
-        .nav-task-btn:hover { border-color: var(--accent-primary); color: var(--accent-secondary); }
+        .task-nav-btn:hover { border-color: var(--accent-primary); color: var(--accent-secondary); }
 
+        /* ─── Constraints Table ─── */
+        .constraints-table {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem; margin-bottom: 1.75rem;
+        }
+        .constraint-cell {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 0.65rem 0.9rem;
+        }
+        .constraint-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+        .constraint-value { font-size: 0.875rem; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+        /* ─── Task Description ─── */
         .task-description {
-            color: var(--text-secondary); line-height: 1.8; font-size: 1rem;
+            color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem;
             white-space: pre-wrap;
         }
 
-        /* Code Editor */
-        .editor-section { margin-top: 2rem; }
-        .editor-label {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 0.75rem;
+        /* ─── Attempts Info ─── */
+        .attempts-info {
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-top: 1.25rem; padding: 0.75rem 1rem;
+            background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
+            border-radius: 10px; font-size: 0.85rem; color: #fbbf24;
         }
-        .editor-label span { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); }
+        .attempts-info.exhausted { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2); color: #f87171; }
+
+        /* ─── Editor Section ─── */
+        .editor-section { margin-top: 1.5rem; }
+        .editor-toolbar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.65rem;
+        }
+        .editor-toolbar-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
         .editor-actions { display: flex; gap: 0.5rem; }
         .editor-btn {
-            padding: 0.35rem 0.85rem; border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+            padding: 0.3rem 0.8rem; border-radius: 8px; font-size: 0.78rem; font-weight: 500;
             cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary);
-            color: var(--text-secondary); transition: all 0.3s;
+            color: var(--text-secondary); transition: all 0.2s; text-decoration: none;
+            display: inline-flex; align-items: center;
         }
         .editor-btn:hover { border-color: var(--accent-primary); color: var(--accent-secondary); }
 
@@ -73,297 +155,290 @@
             border-radius: 14px; overflow: hidden;
         }
         .code-editor-header {
-            display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.1rem;
             background: var(--bg-card); border-bottom: 1px solid var(--border-color);
         }
         .code-dot { width: 10px; height: 10px; border-radius: 50%; }
         .code-dot.red { background: #ff5f56; }
         .code-dot.yellow { background: #ffbd2e; }
         .code-dot.green { background: #27ca40; }
-        .editor-filename { margin-left: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); }
-
+        .editor-filename {
+            margin-left: 0.65rem; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem; color: var(--text-muted);
+        }
         #codeInput {
-            width: 100%; min-height: 280px; padding: 1.25rem;
+            width: 100%; min-height: 260px; padding: 1.1rem;
             background: transparent; border: none; color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.7;
-            resize: vertical; outline: none;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; line-height: 1.7;
+            resize: vertical; outline: none; box-sizing: border-box;
         }
         #codeInput::placeholder { color: var(--text-muted); }
 
-        /* Submit */
-        .submit-wrap { margin-top: 1.25rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-
+        /* ─── Submit Row ─── */
+        .submit-wrap { margin-top: 1.1rem; display: flex; gap: 0.875rem; align-items: center; flex-wrap: wrap; }
         .submit-btn {
-            padding: 0.875rem 2rem;
+            padding: 0.8rem 1.75rem;
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border: none; border-radius: 12px; color: white;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.25s;
             display: flex; align-items: center; gap: 0.5rem;
         }
         .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
         .spinner {
-            width: 18px; height: 18px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .login-note { font-size: 0.875rem; color: var(--text-muted); }
         .login-note a { color: var(--accent-secondary); text-decoration: none; }
         .login-note a:hover { text-decoration: underline; }
 
-        /* Result Panel */
+        /* ─── Result Panel ─── */
         .result-panel {
-            margin-top: 1.5rem; padding: 1.5rem;
+            margin-top: 1.25rem; padding: 1.25rem 1.5rem;
             border-radius: 14px; border: 1px solid var(--border-color);
             display: none;
         }
         .result-panel.visible { display: block; }
-        .result-panel.pass {
-            background: rgba(34, 197, 94, 0.06); border-color: rgba(34, 197, 94, 0.3);
+        .result-panel.pass { background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.28); }
+        .result-panel.fail { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.25); }
+        .result-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.875rem; }
+        .result-verdict { font-size: 1rem; font-weight: 800; }
+        .result-verdict.pass { color: #4ade80; }
+        .result-verdict.fail { color: #f87171; }
+        .result-score {
+            margin-left: auto; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem; font-weight: 700; color: var(--text-muted);
         }
-        .result-panel.fail {
-            background: rgba(239, 68, 68, 0.06); border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .result-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-        .result-icon { font-size: 1.5rem; }
-        .result-title { font-size: 1rem; font-weight: 700; }
-        .result-title.pass { color: var(--success); }
-        .result-title.fail { color: var(--error); }
-
         .result-output {
             background: var(--bg-secondary); border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 1rem;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            border-radius: 10px; padding: 0.875rem 1rem;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
             color: var(--text-secondary); white-space: pre-wrap; max-height: 200px; overflow-y: auto;
-        }
-
-        /* Previous submission */
-        .prev-submission {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem;
-        }
-        .prev-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .prev-status {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.3rem 0.85rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-        .prev-status.pass { background: rgba(34,197,94,0.1); color: var(--success); }
-        .prev-status.fail { background: rgba(239,68,68,0.1); color: var(--error); }
-        .prev-code {
-            background: var(--bg-secondary); border: 1px solid var(--border-color);
-            border-radius: 10px; padding: 1rem;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
-            color: var(--text-secondary); white-space: pre-wrap; max-height: 150px; overflow-y: auto;
         }
 
         @media (max-width: 640px) {
             .task-header { flex-direction: column; }
             .submit-wrap { flex-direction: column; align-items: flex-start; }
+            .constraints-table { grid-template-columns: 1fr 1fr; }
         }
-{% endblock %}
+{% endif %}
 
 {% block content %}
-    <div class="task-page">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-            <a href="{{ url_for('index') }}">Главная</a>
-            <span class="breadcrumb-sep">›</span>
-            <a href="{{ url_for('block', block_key=task.block) }}">{{ block_info.name }}</a>
-            <span class="breadcrumb-sep">›</span>
-            <span>{{ task.title }}</span>
-        </div>
+<div class="task-page">
 
-        <!-- Task Card -->
-        <div class="task-card">
-            <div class="task-header">
-                <div class="task-title-area">
-                    <h1>{{ task.title }}</h1>
-                    <div class="task-badges">
-                        <span class="badge badge-type {{ task.task_type }}">
-                            {% if task.task_type == 'python' %}🐍 Python
-                            {% elif task.task_type == 'sql' %}🗄️ SQL
-                            {% elif task.task_type == 'html' %}🌐 HTML/CSS/JS
-                            {% elif task.task_type == 'answer' %}💡 Ответ
-                            {% else %}{{ task.task_type }}{% endif %}
-                        </span>
-                        <span class="badge badge-{{ task.difficulty }}">
-                            {% if task.difficulty == 'easy' %}✦ Лёгкая
-                            {% elif task.difficulty == 'medium' %}✦✦ Средняя
-                            {% elif task.difficulty == 'hard' %}✦✦✦ Сложная
-                            {% else %}{{ task.difficulty }}{% endif %}
-                        </span>
-                        {% if last_submission and last_submission.passed %}
-                        <span class="badge" style="background:rgba(34,197,94,0.1);color:#4ade80;">✓ Решена</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="task-nav">
-                    <a href="{{ url_for('block', block_key=task.block) }}" class="nav-task-btn" title="К блоку">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    </a>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Навигация">
+        <a href="{{ url_for('index') }}">Главная</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="{{ url_for('lms', block_key=task.block) }}">{{ block_info.name }}</a>
+        <span class="breadcrumb-sep">/</span>
+        <span>{{ task.title }}</span>
+    </nav>
+
+    <!-- Verdict Banner (Yandex-style) -->
+    {% if last_submission %}
+    <div class="verdict-banner {% if last_submission.passed %}accepted{% else %}rejected{% endif %}">
+        <div class="verdict-icon">
+            {% if last_submission.passed %}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            {% else %}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            {% endif %}
+        </div>
+        <div class="verdict-info">
+            <div class="verdict-label">Последняя отправка</div>
+            <div class="verdict-text">
+                {% if last_submission.passed %}
+                Зачтено {{ last_submission.score if last_submission.score is not none else 100 }}/100 баллов
+                {% else %}
+                Доработать
+                {% endif %}
+            </div>
+        </div>
+        {% if last_submission.code %}
+        <button class="verdict-code-toggle" onclick="togglePrevCode(this)">Показать код</button>
+        {% endif %}
+    </div>
+    {% if last_submission.code %}
+    <div class="prev-code-wrap" id="prevCode">{{ last_submission.code }}</div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Task Card -->
+    <div class="task-card">
+        <div class="task-header">
+            <div class="task-title-area">
+                <h1>{{ task.title }}</h1>
+                <div class="task-badges">
+                    <span class="badge badge-type-{{ task.task_type }}">
+                        {% if task.task_type == 'python' %}🐍 Python
+                        {% elif task.task_type == 'sql' %}🗄️ SQL
+                        {% elif task.task_type == 'html' %}🌐 HTML/JS
+                        {% elif task.task_type == 'answer' %}💡 Ответ
+                        {% else %}{{ task.task_type }}{% endif %}
+                    </span>
+                    <span class="badge badge-{{ task.difficulty }}">
+                        {% if task.difficulty == 'easy' %}Лёгкая
+                        {% elif task.difficulty == 'medium' %}Средняя
+                        {% elif task.difficulty == 'hard' %}Сложная
+                        {% else %}{{ task.difficulty }}{% endif %}
+                    </span>
+                    {% if task.attempts_limit %}
+                    <span class="badge" style="background:rgba(251,191,36,0.08);color:#fbbf24;border-color:rgba(251,191,36,0.2);">
+                        Лимит: {{ task.attempts_limit }} попытки
+                    </span>
+                    {% endif %}
+                    {% if last_submission and last_submission.passed %}
+                    <span class="badge" style="background:rgba(34,197,94,0.1);color:#4ade80;border-color:rgba(34,197,94,0.25);">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        Зачтено
+                    </span>
+                    {% endif %}
                 </div>
             </div>
-
-            <div class="task-description">{{ task.description }}</div>
+            <a href="{{ url_for('lms', block_key=task.block) }}" class="task-nav-btn" title="Назад к блоку">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </a>
         </div>
 
-        <!-- Previous submission -->
-        {% if last_submission %}
-        <div class="prev-submission">
-            <div class="prev-title">Последняя отправка</div>
-            <div class="prev-status {% if last_submission.passed %}pass{% else %}fail{% endif %}">
-                {% if last_submission.passed %}✓ Верно{% else %}✗ Неверно{% endif %}
+        <!-- Constraints (for algo/backend tasks) -->
+        {% if task.time_limit or task.memory_limit or task.input_format or task.output_format %}
+        <div class="constraints-table">
+            {% if task.time_limit %}
+            <div class="constraint-cell">
+                <div class="constraint-label">Время</div>
+                <div class="constraint-value">{{ task.time_limit }}</div>
             </div>
-            {% if last_submission.code %}
-            <div class="prev-code">{{ last_submission.code }}</div>
+            {% endif %}
+            {% if task.memory_limit %}
+            <div class="constraint-cell">
+                <div class="constraint-label">Память</div>
+                <div class="constraint-value">{{ task.memory_limit }}</div>
+            </div>
+            {% endif %}
+            {% if task.input_format %}
+            <div class="constraint-cell">
+                <div class="constraint-label">Ввод</div>
+                <div class="constraint-value">{{ task.input_format }}</div>
+            </div>
+            {% endif %}
+            {% if task.output_format %}
+            <div class="constraint-cell">
+                <div class="constraint-label">Вывод</div>
+                <div class="constraint-value">{{ task.output_format }}</div>
+            </div>
             {% endif %}
         </div>
         {% endif %}
 
-        <!-- Editor -->
-        <div class="editor-section">
-            <div class="editor-label">
-                <span>
-                    {% if task.task_type == 'python' %}Ваш код (Python)
-                    {% elif task.task_type == 'sql' %}Ваш SQL-запрос
-                    {% elif task.task_type == 'html' %}Ваш HTML/CSS/JS код
-                    {% elif task.task_type == 'answer' %}Ваш ответ
-                    {% else %}Решение{% endif %}
-                </span>
-                <div class="editor-actions">
-                    <button type="button" class="editor-btn" onclick="clearEditor()">Очистить</button>
-                    {% if last_submission and last_submission.code %}
-                    <button type="button" class="editor-btn" onclick="restoreCode()">Восстановить</button>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="code-editor-wrap">
-                <div class="code-editor-header">
-                    <span class="code-dot red"></span>
-                    <span class="code-dot yellow"></span>
-                    <span class="code-dot green"></span>
-                    <span class="editor-filename">
-                        {% if task.task_type == 'python' %}solution.py
-                        {% elif task.task_type == 'sql' %}query.sql
-                        {% elif task.task_type == 'html' %}index.html
-                        {% elif task.task_type == 'answer' %}answer.txt
-                        {% else %}solution{% endif %}
-                    </span>
-                </div>
-                <textarea id="codeInput"
-                    placeholder="{% if task.task_type == 'python' %}# Напишите ваш Python код здесь...
-n = int(input())
-print(n){% elif task.task_type == 'sql' %}-- Напишите ваш SQL запрос здесь...
-SELECT ...{% elif task.task_type == 'html' %}<!-- Напишите ваш HTML код здесь -->
-<!DOCTYPE html>
-<html>
-...
-</html>{% elif task.task_type == 'answer' %}Введите ваш ответ...{% else %}Введите решение...{% endif %}"
-                >{% if last_submission %}{{ last_submission.code }}{% endif %}</textarea>
-            </div>
+        <!-- Description -->
+        <div class="task-description">{{ task.description }}</div>
+    </div>
 
-            <div class="submit-wrap">
-                {% if current_user.is_authenticated %}
-                <button type="button" class="submit-btn" id="submitBtn" onclick="submitSolution()">
-                    <span id="btnText">Отправить решение</span>
-                    <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </button>
-                {% else %}
-                <p class="login-note">
-                    <a href="{{ url_for('login') }}">Войдите</a> или <a href="{{ url_for('register') }}">зарегистрируйтесь</a>, чтобы отправлять решения
-                </p>
+    <!-- Attempts Info -->
+    {% if task.attempts_limit and current_user.is_authenticated %}
+    {% set remaining = task.attempts_limit - submissions_count %}
+    <div class="attempts-info {% if remaining <= 0 %}exhausted{% endif %}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {% if remaining > 0 %}
+        Осталось попыток: <strong>{{ remaining }} из {{ task.attempts_limit }}</strong>
+        {% else %}
+        Лимит попыток исчерпан. Больше отправок нет.
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Editor -->
+    <div class="editor-section">
+        <div class="editor-toolbar">
+            <span class="editor-toolbar-label">
+                {% if task.task_type == 'python' %}Ваш код (Python)
+                {% elif task.task_type == 'sql' %}Ваш SQL-запрос
+                {% elif task.task_type == 'html' %}Ваш HTML/CSS/JS код
+                {% elif task.task_type == 'answer' %}Ваш ответ
+                {% else %}Решение{% endif %}
+            </span>
+            <div class="editor-actions">
+                <button type="button" class="editor-btn" onclick="clearEditor()">Очистить</button>
+                {% if last_submission and last_submission.code %}
+                <button type="button" class="editor-btn" onclick="restoreCode()">Восстановить</button>
                 {% endif %}
-                <a href="{{ url_for('block', block_key=task.block) }}" class="editor-btn">← Назад к блоку</a>
-            </div>
-
-            <!-- Result panel -->
-            <div class="result-panel" id="resultPanel">
-                <div class="result-header">
-                    <span class="result-icon" id="resultIcon"></span>
-                    <span class="result-title" id="resultTitle"></span>
-                </div>
-                <div class="result-output" id="resultOutput"></div>
             </div>
         </div>
+
+        <div class="code-editor-wrap">
+            <div class="code-editor-header">
+                <span class="code-dot red"></span>
+                <span class="code-dot yellow"></span>
+                <span class="code-dot green"></span>
+                <span class="editor-filename">
+                    {% if task.task_type == 'python' %}solution.py
+                    {% elif task.task_type == 'sql' %}query.sql
+                    {% elif task.task_type == 'html' %}index.html
+                    {% elif task.task_type == 'answer' %}answer.txt
+                    {% else %}solution{% endif %}
+                </span>
+            </div>
+            <textarea id="codeInput"
+                placeholder="{% if task.task_type == 'python' %}# Напишите Python-код здесь...
+import sys
+input = sys.stdin.readline
+
+def solve():
+    pass
+
+solve(){% elif task.task_type == 'sql' %}-- SQL-запрос здесь...
+SELECT ...{% elif task.task_type == 'html' %}<!-- HTML-код здесь -->
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><title>...</title></head>
+<body>
+...
+</body>
+</html>{% elif task.task_type == 'answer' %}Введите ответ (число, слово или выражение)...{% endif %}"
+            >{% if last_submission and last_submission.code %}{{ last_submission.code }}{% endif %}</textarea>
+        </div>
+
+        <div class="submit-wrap">
+            {% if current_user.is_authenticated %}
+            {% set attempts_left = (task.attempts_limit - submissions_count) if task.attempts_limit else 999 %}
+            <button type="button" class="submit-btn" id="submitBtn"
+                {% if task.attempts_limit and submissions_count >= task.attempts_limit %}disabled{% endif %}
+                onclick="submitSolution()">
+                <span id="btnText">Отправить решение</span>
+                <svg id="btnIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            {% else %}
+            <p class="login-note">
+                <a href="{{ url_for('login') }}">Войдите</a> или <a href="{{ url_for('register') }}">зарегистрируйтесь</a>, чтобы отправлять решения
+            </p>
+            {% endif %}
+            <a href="{{ url_for('lms', block_key=task.block) }}" class="editor-btn">← Назад к блоку</a>
+        </div>
+
+        <!-- Result Panel -->
+        <div class="result-panel" id="resultPanel">
+            <div class="result-header">
+                <span class="result-verdict" id="resultVerdict"></span>
+                <span class="result-score" id="resultScore"></span>
+            </div>
+            <div class="result-output" id="resultOutput"></div>
+        </div>
     </div>
+
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const TASK_ID = {{ task.id }};
-    const lastCode = {{ ('"' + last_submission.code|replace('"', '\\"')|replace('\n', '\\n') + '"') if last_submission and last_submission.code else 'null' }};
-
-    function clearEditor() {
-        document.getElementById('codeInput').value = '';
-    }
-
-    function restoreCode() {
-        if (lastCode) {
-            document.getElementById('codeInput').value = lastCode.replace(/\\n/g, '\n');
-        }
-    }
-
-    async function submitSolution() {
-        const code = document.getElementById('codeInput').value.trim();
-        if (!code) {
-            showResult(false, 'Введите решение перед отправкой', '');
-            return;
-        }
-
-        const btn = document.getElementById('submitBtn');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-
-        btn.disabled = true;
-        btnText.textContent = 'Проверяем...';
-        btnIcon.outerHTML = '<div class="spinner" id="btnIcon"></div>';
-
-        try {
-            const res = await fetch('/api/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ task_id: TASK_ID, code: code })
-            });
-            const data = await res.json();
-            showResult(data.passed, data.message, data.result || '');
-        } catch (e) {
-            showResult(false, 'Ошибка соединения', e.message);
-        } finally {
-            btn.disabled = false;
-            btnText.textContent = 'Отправить решение';
-            document.getElementById('btnIcon').outerHTML = '<svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-        }
-    }
-
-    function showResult(passed, message, output) {
-        const panel = document.getElementById('resultPanel');
-        const icon = document.getElementById('resultIcon');
-        const title = document.getElementById('resultTitle');
-        const out = document.getElementById('resultOutput');
-
-        panel.className = 'result-panel visible ' + (passed ? 'pass' : 'fail');
-        icon.textContent = passed ? '✓' : '✗';
-        title.className = 'result-title ' + (passed ? 'pass' : 'fail');
-        title.textContent = message;
-        out.textContent = output || (passed ? 'Все тесты пройдены!' : 'Проверьте правильность решения');
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // Tab key in editor
-    document.getElementById('codeInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-            this.selectionStart = this.selectionEnd = start + 4;
-        }
-    });
+window.TASK_DATA = {
+    taskId: {{ task.id }},
+    lastCode: {{ (last_submission.code|tojson) if last_submission and last_submission.code else 'null' }}
+};
 </script>
+<script src="{{ url_for('static', filename='js/task.js') }}"></script>
 {% endblock %}

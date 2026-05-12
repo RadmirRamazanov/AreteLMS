@@ -2,178 +2,8 @@
 
 {% block title %}Arete LMS — Практика программирования{% endblock %}
 
-{% block extra_styles %}
-        .hero {
-            min-height: 100vh; display: flex; align-items: center;
-            padding: 8rem 2rem 4rem;
-        }
-        .hero-container {
-            max-width: 1400px; margin: 0 auto;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-        }
-        .hero-content h1 {
-            font-size: clamp(3rem, 6vw, 5rem); font-weight: 800;
-            line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem;
-        }
-        .hero-content h1 span {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-        .hero-content p {
-            font-size: 1.2rem; color: var(--text-secondary);
-            margin-bottom: 2rem; max-width: 500px; line-height: 1.7;
-        }
-        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .hero-stats {
-            display: flex; gap: 3rem; margin-top: 3rem;
-            padding-top: 2rem; border-top: 1px solid var(--border-color);
-        }
-        .stat-value {
-            font-size: 2.5rem; font-weight: 800;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-        }
-        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
-
-        /* Code Window */
-        .hero-visual { position: relative; }
-        .code-window {
-            background: var(--bg-secondary); border: 1px solid var(--border-color);
-            border-radius: 16px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5);
-            transform: perspective(1000px) rotateY(-5deg) rotateX(3deg);
-            transition: transform 0.5s ease;
-        }
-        .code-window:hover { transform: perspective(1000px) rotateY(0deg) rotateX(0deg); }
-        .code-header {
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 1rem 1.25rem; background: var(--bg-card); border-bottom: 1px solid var(--border-color);
-        }
-        .code-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .code-dot.red { background: #ff5f56; }
-        .code-dot.yellow { background: #ffbd2e; }
-        .code-dot.green { background: #27ca40; }
-        .code-title { margin-left: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); }
-        .code-body { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; line-height: 1.8; }
-        .code-line { display: flex; gap: 1rem; }
-        .line-number { color: var(--text-muted); user-select: none; min-width: 2rem; text-align: right; }
-        .code-keyword { color: #c678dd; }
-        .code-function { color: #61afef; }
-        .code-string { color: #98c379; }
-        .code-variable { color: #e5c07b; }
-        .code-comment { color: #5c6370; font-style: italic; }
-
-        /* Blocks Section */
-        .blocks-section { padding: 6rem 2rem; }
-        .section-header { text-align: center; max-width: 700px; margin: 0 auto 4rem; }
-        .section-tag {
-            display: inline-block; padding: 0.4rem 1rem;
-            background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 100px; font-size: 0.8rem; font-weight: 600; color: var(--accent-secondary);
-            margin-bottom: 1.5rem;
-        }
-        .section-header h2 {
-            font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
-            letter-spacing: -0.02em; margin-bottom: 1rem;
-        }
-        .section-header p { font-size: 1.05rem; color: var(--text-secondary); }
-
-        .blocks-grid {
-            max-width: 1400px; margin: 0 auto;
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;
-        }
-
-        .block-card {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 2rem; transition: all 0.4s ease;
-            cursor: pointer; text-decoration: none; color: inherit; position: relative; overflow: hidden;
-            display: block;
-        }
-        .block-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            transform: scaleX(0); transition: transform 0.4s ease;
-        }
-        .block-card:hover { transform: translateY(-6px); border-color: var(--accent-primary); box-shadow: 0 20px 60px rgba(139,92,246,0.15); }
-        .block-card:hover::before { transform: scaleX(1); }
-
-        .block-icon {
-            width: 56px; height: 56px;
-            background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(167,139,250,0.1));
-            border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; margin-bottom: 1.25rem;
-        }
-        .block-card h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.6rem; }
-        .block-card > p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem; }
-
-        .block-meta {
-            display: flex; justify-content: space-between; align-items: center;
-            padding-top: 1.25rem; border-top: 1px solid var(--border-color);
-        }
-        .block-tasks { font-size: 0.875rem; color: var(--text-muted); }
-        .block-tasks strong { color: var(--text-primary); }
-
-        .block-progress {
-            display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);
-        }
-        .progress-bar-mini {
-            width: 60px; height: 4px; background: var(--bg-secondary); border-radius: 2px; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 2px; transition: width 0.5s ease;
-        }
-
-        /* Features */
-        .features-section { padding: 6rem 2rem; background: var(--bg-secondary); }
-        .features-grid {
-            max-width: 1200px; margin: 0 auto;
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
-        }
-        .feature-card { text-align: center; padding: 2.5rem 2rem; }
-        .feature-icon {
-            width: 80px; height: 80px; margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(167,139,250,0.05));
-            border: 1px solid rgba(139,92,246,0.2);
-            border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2rem;
-        }
-        .feature-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.6rem; }
-        .feature-card p { color: var(--text-secondary); font-size: 0.9rem; }
-
-        /* CTA */
-        .cta-section { padding: 8rem 2rem; text-align: center; }
-        .cta-container {
-            max-width: 800px; margin: 0 auto;
-            background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(167,139,250,0.05));
-            border: 1px solid rgba(139,92,246,0.2); border-radius: 32px; padding: 4rem 3rem;
-        }
-        .cta-container h2 { font-size: clamp(2rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 1rem; }
-        .cta-container p { color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2rem; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-in { animation: fadeInUp 0.7s ease forwards; }
-        .delay-1 { animation-delay: 0.1s; opacity: 0; }
-        .delay-2 { animation-delay: 0.2s; opacity: 0; }
-        .delay-3 { animation-delay: 0.3s; opacity: 0; }
-        .delay-4 { animation-delay: 0.4s; opacity: 0; }
-
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-
-        @media (max-width: 1024px) {
-            .hero-container { grid-template-columns: 1fr; text-align: center; }
-            .hero-content p { margin-left: auto; margin-right: auto; }
-            .hero-buttons { justify-content: center; }
-            .hero-stats { justify-content: center; }
-            .hero-visual { display: none; }
-            .features-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .hero-stats { flex-direction: column; gap: 1.5rem; align-items: center; }
-        }
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -188,7 +18,7 @@
                 </p>
                 <div class="hero-buttons animate-in delay-2">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('block', block_key='theory') }}" class="btn btn-primary">
+                        <a href="{{ url_for('lms_root') }}" class="btn btn-primary">
                             Продолжить обучение
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
@@ -197,7 +27,6 @@
                             Начать обучение
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="{{ url_for('block', block_key='theory') }}" class="btn btn-outline">Посмотреть задачи</a>
                     {% endif %}
                 </div>
                 <div class="hero-stats animate-in delay-3">
@@ -226,35 +55,6 @@
                     <div class="code-body" id="codeContent"></div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Blocks -->
-    <section class="blocks-section" id="blocks">
-        <div class="section-header">
-            <span class="section-tag">5 направлений</span>
-            <h2>Выбери свой путь</h2>
-            <p>Каждый блок содержит десятки задач с автоматической проверкой. Начни с любого и прокачивай навыки.</p>
-        </div>
-        <div class="blocks-grid">
-            {% for b in blocks %}
-            <a href="{{ url_for('block', block_key=b.key) }}" class="block-card">
-                <div class="block-icon">{{ b.icon }}</div>
-                <h3>{{ b.name }}</h3>
-                <p>{{ b.description }}</p>
-                <div class="block-meta">
-                    <span class="block-tasks"><strong>{{ b.count }}</strong> задач</span>
-                    {% if current_user.is_authenticated and b.count > 0 %}
-                    <div class="block-progress">
-                        <div class="progress-bar-mini">
-                            <div class="progress-fill" style="width: {{ (b.solved / b.count * 100)|int }}%"></div>
-                        </div>
-                        <span>{{ b.solved }}/{{ b.count }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-            </a>
-            {% endfor %}
         </div>
     </section>
 
@@ -290,7 +90,7 @@
             <h2>Готов начать практиковаться?</h2>
             <p>Присоединяйся к сообществу программистов, которые учатся через практику</p>
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('block', block_key='theory') }}" class="btn btn-primary">
+                <a href="{{ url_for('lms_root') }}" class="btn btn-primary">
                     К задачам
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
@@ -305,36 +105,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    const codeLines = [
-        { num: 1, content: '<span class="code-keyword">def</span> <span class="code-function">solve</span>(n):' },
-        { num: 2, content: '    <span class="code-comment"># Быстрое решение</span>' },
-        { num: 3, content: '    <span class="code-keyword">if</span> n <= <span class="code-variable">1</span>:' },
-        { num: 4, content: '        <span class="code-keyword">return</span> n' },
-        { num: 5, content: '    <span class="code-keyword">return</span> <span class="code-function">solve</span>(n-<span class="code-variable">1</span>) + <span class="code-function">solve</span>(n-<span class="code-variable">2</span>)' },
-        { num: 6, content: '' },
-        { num: 7, content: '<span class="code-function">print</span>(<span class="code-function">solve</span>(<span class="code-variable">10</span>))  <span class="code-comment"># ✓ Тесты пройдены</span>' }
-    ];
-    function typeCode() {
-        const container = document.getElementById('codeContent');
-        if (!container) return;
-        container.innerHTML = '';
-        codeLines.forEach((line, index) => {
-            setTimeout(() => {
-                const el = document.createElement('div');
-                el.className = 'code-line';
-                el.innerHTML = `<span class="line-number">${line.num}</span><span>${line.content}</span>`;
-                el.style.opacity = '0'; el.style.transform = 'translateX(-10px)';
-                container.appendChild(el);
-                setTimeout(() => { el.style.transition = 'all 0.3s ease'; el.style.opacity = '1'; el.style.transform = 'translateX(0)'; }, 50);
-            }, index * 220);
-        });
-    }
-    setTimeout(typeCode, 800);
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('animate-in'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.block-card, .feature-card').forEach(el => { el.style.opacity = '0'; observer.observe(el); });
-</script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
 {% endblock %}
