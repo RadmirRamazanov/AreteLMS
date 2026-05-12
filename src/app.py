@@ -9,22 +9,14 @@ from models import db, User, Task, Submission, BLOCKS, seed_tasks
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
-
-app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'arete-lms-dev-secret-2024')
+app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', '955c705c4f8ae555ee5ba3ce34ebb79812f63f1b0055d0df700cf4803a3feea6')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///arete_lms.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False
-app.config['PERMANENT_SESSION_LIFETIME'] = 86400 * 30  # 30 дней
 
 db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-login_manager.login_message = 'Пожалуйста, войдите для доступа к этой странице.'
 
 
 @login_manager.user_loader
@@ -273,7 +265,6 @@ def submit():
     if not t:
         return jsonify({'error': 'Задача не найдена'}), 404
 
-    # Check attempts limit
     if t.attempts_limit:
         used = Submission.query.filter_by(
             task_id=task_id, user_id=current_user.id
@@ -284,7 +275,6 @@ def submit():
                 'attempts_exceeded': True,
             }), 403
 
-    # Parse test cases
     test_cases = []
     if t.test_cases_json:
         try:

@@ -17,14 +17,15 @@ BLOCKS = {
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id            = db.Column(db.Integer, primary_key=True)
-    username      = db.Column(db.String(80),  unique=True, nullable=False)
-    email         = db.Column(db.String(120), unique=True, nullable=False)
-    first_name    = db.Column(db.String(50),  nullable=False)
-    last_name     = db.Column(db.String(50),  nullable=False)
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
-    submissions   = db.relationship('Submission', backref='user', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    submissions = db.relationship('Submission', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -44,23 +45,23 @@ class User(UserMixin, db.Model):
 
 class Task(db.Model):
     __tablename__ = 'tasks'
-    id              = db.Column(db.Integer, primary_key=True)
-    block           = db.Column(db.String(50),  nullable=False)
-    title           = db.Column(db.String(200), nullable=False)
-    description     = db.Column(db.Text,        nullable=False)
-    task_type       = db.Column(db.String(50),  nullable=False)  # python / sql / html / answer
-    expected_output = db.Column(db.Text,        nullable=True)   # for fallback / answer tasks
-    test_cases_json = db.Column(db.Text,        nullable=True)   # JSON [{input, output}]
-    difficulty      = db.Column(db.String(20),  default='medium')
-    order_num       = db.Column(db.Integer,     default=0)
-    max_score       = db.Column(db.Integer,     default=100)
-    attempts_limit  = db.Column(db.Integer,     nullable=True)   # None = unlimited
-    # display-only constraint fields
-    time_limit      = db.Column(db.String(40),  nullable=True)
-    memory_limit    = db.Column(db.String(40),  nullable=True)
-    input_format    = db.Column(db.String(80),  nullable=True)
-    output_format   = db.Column(db.String(80),  nullable=True)
-    submissions     = db.relationship('Submission', backref='task', lazy=True)
+
+    id = db.Column(db.Integer, primary_key=True)
+    block = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    task_type = db.Column(db.String(50), nullable=False)
+    expected_output = db.Column(db.Text, nullable=True)
+    test_cases_json = db.Column(db.Text, nullable=True)
+    difficulty = db.Column(db.String(20), default='medium')
+    order_num = db.Column(db.Integer, default=0)
+    max_score = db.Column(db.Integer, default=100)
+    attempts_limit = db.Column(db.Integer, nullable=True)
+    time_limit = db.Column(db.String(40), nullable=True)
+    memory_limit = db.Column(db.String(40), nullable=True)
+    input_format = db.Column(db.String(80), nullable=True)
+    output_format = db.Column(db.String(80), nullable=True)
+    submissions = db.relationship('Submission', backref='task', lazy=True)
 
     def solved_by(self, user_id):
         return (
@@ -72,18 +73,18 @@ class Task(db.Model):
 
 class Submission(db.Model):
     __tablename__ = 'submissions'
-    id           = db.Column(db.Integer, primary_key=True)
-    user_id      = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    task_id      = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
-    code         = db.Column(db.Text,    nullable=True)
-    result       = db.Column(db.Text,    nullable=True)
-    passed       = db.Column(db.Boolean, default=False)
-    score        = db.Column(db.Integer, default=0)
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
+    code = db.Column(db.Text, nullable=True)
+    result = db.Column(db.Text, nullable=True)
+    passed = db.Column(db.Boolean, default=False)
+    score = db.Column(db.Integer, default=0)
+    submitted_at = db.Column(db.DateTime, default=datetime.now)
 
 
 def _tc(cases):
-    """Shorthand: convert list of (input, output) tuples to JSON string."""
     return json.dumps([{'input': inp, 'output': out} for inp, out in cases])
 
 
