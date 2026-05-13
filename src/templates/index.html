@@ -59,27 +59,36 @@
     </section>
 
     <!-- Features -->
-    <section class="features-section" id="features">
-        <div class="section-header">
-            <span class="section-tag">Почему Arete?</span>
-            <h2>Создан для практики</h2>
-            <p>Меньше теории, больше кода. Именно так становятся профессионалами.</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🚀</div>
-                <h3>Мгновенная проверка</h3>
-                <p>Отправляй решение и получай результат за секунды. Автоматические тесты проверят твой код.</p>
+    <section class="features-section" id="features" style="position:relative;overflow:hidden;">
+        <div class="features-bg" style="position:absolute;inset:0;background:url('{{ url_for('static', filename='arete.png') }}') center/cover no-repeat;opacity:0.08;z-index:0;"></div>
+        <div style="position:relative;z-index:1;">
+            <div class="section-header">
+                <span class="section-tag">Почему Arete?</span>
+                <h2>Создан для практики</h2>
+                <p>Меньше теории, больше кода. Именно так становятся профессионалами.</p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Подготовка к олимпиадам</h3>
-                <p>Задачи уровня олимпиады «Высшая проба» по промышленному программированию.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h3>Отслеживание прогресса</h3>
-                <p>Смотри сколько задач решено, какие темы освоены и что ещё предстоит изучить.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ url_for('static', filename='sonic.png') }}" alt="Мгновенная проверка" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;">
+                    </div>
+                    <h3>Мгновенная проверка</h3>
+                    <p>Отправляй решение и получай результат за секунды. Автоматические тесты проверят твой код.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ url_for('static', filename='hse.png') }}" alt="Подготовка к олимпиадам" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <h3>Подготовка к олимпиадам</h3>
+                    <p>Задачи уровня олимпиады «Высшая проба» по промышленному программированию.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ url_for('static', filename='improve.png') }}" alt="Отслеживание прогресса" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <h3>Отслеживание прогресса</h3>
+                    <p>Смотри сколько задач решено, какие темы освоены и что ещё предстоит изучить.</p>
+                </div>
             </div>
         </div>
     </section>

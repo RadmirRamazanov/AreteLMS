@@ -2,9 +2,9 @@
     const codeLines = [
         { num: 1, content: '<span class="code-keyword">def</span> <span class="code-function">solve</span>(n):' },
         { num: 2, content: '    <span class="code-comment"># Быстрое решение</span>' },
-        { num: 3, content: '    <span class="code-keyword">if</span> n <= <span class="code-variable">1</span>:' },
-        { num: 4, content: '        <span class="code-keyword">return</span> n' },
-        { num: 5, content: '    <span class="code-keyword">return</span> <span class="code-function">solve</span>(n-<span class="code-variable">1</span>) + <span class="code-function">solve</span>(n-<span class="code-variable">2</span>)' },
+        { num: 3, content: '    <span class="code-keyword">ㅤㅤif</span> n <= <span class="code-variable">1</span>:' },
+        { num: 4, content: '        <span class="code-keyword">ㅤㅤㅤㅤreturn</span> n' },
+        { num: 5, content: '    <span class="code-keyword">ㅤㅤreturn</span> <span class="code-function">solve</span>(n-<span class="code-variable">1</span>) + <span class="code-function">solve</span>(n-<span class="code-variable">2</span>)' },
         { num: 6, content: '' },
         { num: 7, content: '<span class="code-function">print</span>(<span class="code-function">solve</span>(<span class="code-variable">10</span>))  <span class="code-comment"># ✓ Тесты пройдены</span>' }
     ];

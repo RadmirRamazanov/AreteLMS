@@ -19,8 +19,8 @@
     <nav>
         <div class="nav-container">
             <a href="{{ url_for('web.index') }}" class="logo">
-                <div class="logo-icon">A</div>
-                <span class="logo-text">Arete</span>
+                <img src="{{ url_for('static', filename='aretelogo.jpg') }}" alt="Arete" class="logo-icon-img">
+                <span class="logo-text">Arete LMS</span>
             </a>
             <ul class="nav-links">
                 {% if current_user.is_authenticated %}
