@@ -479,7 +479,7 @@ main { padding-top: 70px; }
         <div class="sidebar-section">Блоки</div>
 
         {% for b in all_blocks %}
-        <a href="{{ url_for('lms', block_key=b.key) }}"
+        <a href="{{ url_for('web.lms', block_key=b.key) }}"
            class="sidebar-block {% if b.key == block_key %}active{% endif %}">
             <div class="sb-icon">{{ b.icon }}</div>
             <div class="sb-info">
@@ -517,7 +517,7 @@ main { padding-top: 70px; }
         <!-- Mobile tabs -->
         <div class="mob-block-tabs">
             {% for b in all_blocks %}
-            <a href="{{ url_for('lms', block_key=b.key) }}"
+            <a href="{{ url_for('web.lms', block_key=b.key) }}"
                class="mob-tab {% if b.key == block_key %}active{% endif %}">
                 {{ b.icon }} {{ b.name }}
             </a>
@@ -591,7 +591,7 @@ main { padding-top: 70px; }
                 {% if tasks_data %}
                     {% for td in tasks_data %}
                     {% set t = td.task %}
-                    <a href="{{ url_for('task', task_id=t.id) }}"
+                    <a href="{{ url_for('web.task', task_id=t.id) }}"
                        class="task-row {% if td.last_verdict == 'accepted' %}tr-accepted{% elif td.last_verdict == 'rejected' %}tr-rejected{% endif %}"
                        style="animation-delay: {{ loop.index0 * 45 }}ms">
 
@@ -657,8 +657,8 @@ main { padding-top: 70px; }
                     доступ к {{ total }} заданиям этого блока
                 </p>
                 <div class="lock-actions">
-                    <a href="{{ url_for('register', next=url_for('lms', block_key=block_key)) }}" class="lock-btn-primary">Зарегистрироваться</a>
-                    <a href="{{ url_for('login', next=url_for('lms', block_key=block_key)) }}" class="lock-btn-ghost">Уже есть аккаунт →</a>
+                    <a href="{{ url_for('web.register', next=url_for('web.lms', block_key=block_key)) }}" class="lock-btn-primary">Зарегистрироваться</a>
+                    <a href="{{ url_for('web.login', next=url_for('web.lms', block_key=block_key)) }}" class="lock-btn-ghost">Уже есть аккаунт →</a>
                 </div>
             </div>
             {% endif %}

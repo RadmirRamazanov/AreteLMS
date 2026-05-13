@@ -346,9 +346,9 @@
 
     <!-- Breadcrumb -->
     <nav class="breadcrumb" aria-label="Навигация">
-        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('web.index') }}">Главная</a>
         <span class="breadcrumb-sep">/</span>
-        <a href="{{ url_for('index') }}#blocks">Блоки</a>
+        <a href="{{ url_for('web.index') }}#blocks">Блоки</a>
         <span class="breadcrumb-sep">/</span>
         <span>{{ block_info.name }}</span>
     </nav>
@@ -426,7 +426,7 @@
         {% if tasks_data %}
         {% for td in tasks_data %}
         {% set t = td.task %}
-        <a href="{{ url_for('task', task_id=t.id) }}"
+        <a href="{{ url_for('web.task', task_id=t.id) }}"
            class="task-item {% if td.last_verdict %}{{ td.last_verdict }}{% endif %}"
            style="animation-delay: {{ loop.index0 * 50 }}ms">
 
@@ -497,8 +497,8 @@
             чтобы получить доступ к {{ total }} заданиям этого блока
         </p>
         <div class="lock-actions">
-            <a href="{{ url_for('register', next=url_for('block', block_key=block_key)) }}" class="lock-btn-primary">Зарегистрироваться</a>
-            <a href="{{ url_for('login', next=url_for('block', block_key=block_key)) }}" class="lock-btn-ghost">Уже есть аккаунт →</a>
+            <a href="{{ url_for('web.register', next=url_for('web.block', block_key=block_key)) }}" class="lock-btn-primary">Зарегистрироваться</a>
+            <a href="{{ url_for('web.login', next=url_for('web.block', block_key=block_key)) }}" class="lock-btn-ghost">Уже есть аккаунт →</a>
         </div>
         <div class="lock-preview">
             {% for td in tasks_data[:3] %}

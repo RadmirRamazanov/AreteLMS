@@ -1,22 +1,53 @@
 import json
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+
+from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
 
 db = SQLAlchemy()
 
 BLOCKS = {
-    'theory':     {'name': 'Теория',     'icon': '📚', 'description': 'Математика, системы счисления и логические задачи олимпиадного уровня'},
-    'algorithms': {'name': 'Алгоритмы', 'icon': '⚡', 'description': 'Сортировки, поиск, динамическое программирование и игровые задачи'},
-    'data':       {'name': 'Данные',     'icon': '📊', 'description': 'SQL-запросы, анализ данных и работа с Python-структурами'},
-    'backend':    {'name': 'Бэкенд',    'icon': '🔧', 'description': 'REST API, Flask, алгоритмы на Python с правильным вводом/выводом'},
-    'frontend':   {'name': 'Фронтенд',  'icon': '🎨', 'description': 'HTML, CSS, JavaScript и строгая валидация интерфейсов'},
+    "theory": {
+        "name": "Теория",
+        "icon": "📚",
+        "description": (
+            "Математика, системы счисления и логические задачи олимпиадного уровня"
+        ),
+    },
+    "algorithms": {
+        "name": "Алгоритмы",
+        "icon": "⚡",
+        "description": (
+            "Сортировки, поиск, динамическое программирование и игровые задачи"
+        ),
+    },
+    "data": {
+        "name": "Данные",
+        "icon": "📊",
+        "description": (
+            "SQL-запросы, анализ данных и работа с Python-структурами"
+        ),
+    },
+    "backend": {
+        "name": "Бэкенд",
+        "icon": "🔧",
+        "description": (
+            "REST API, Flask, алгоритмы на Python с правильным вводом/выводом"
+        ),
+    },
+    "frontend": {
+        "name": "Фронтенд",
+        "icon": "🎨",
+        "description": (
+            "HTML, CSS, JavaScript и строгая валидация интерфейсов"
+        ),
+    },
 }
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -25,7 +56,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
-    submissions = db.relationship('Submission', backref='user', lazy=True)
+    submissions = db.relationship("Submission", backref="user", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -35,8 +66,7 @@ class User(UserMixin, db.Model):
 
     def solved_in_block(self, block):
         return (
-            Submission.query
-            .filter_by(user_id=self.id, passed=True)
+            Submission.query.filter_by(user_id=self.id, passed=True)
             .join(Task)
             .filter(Task.block == block)
             .count()
@@ -44,7 +74,7 @@ class User(UserMixin, db.Model):
 
 
 class Task(db.Model):
-    __tablename__ = 'tasks'
+    __tablename__ = "tasks"
 
     id = db.Column(db.Integer, primary_key=True)
     block = db.Column(db.String(50), nullable=False)
@@ -53,7 +83,7 @@ class Task(db.Model):
     task_type = db.Column(db.String(50), nullable=False)
     expected_output = db.Column(db.Text, nullable=True)
     test_cases_json = db.Column(db.Text, nullable=True)
-    difficulty = db.Column(db.String(20), default='medium')
+    difficulty = db.Column(db.String(20), default="medium")
     order_num = db.Column(db.Integer, default=0)
     max_score = db.Column(db.Integer, default=100)
     attempts_limit = db.Column(db.Integer, nullable=True)
@@ -61,22 +91,23 @@ class Task(db.Model):
     memory_limit = db.Column(db.String(40), nullable=True)
     input_format = db.Column(db.String(80), nullable=True)
     output_format = db.Column(db.String(80), nullable=True)
-    submissions = db.relationship('Submission', backref='task', lazy=True)
+    submissions = db.relationship("Submission", backref="task", lazy=True)
 
     def solved_by(self, user_id):
         return (
-            Submission.query
-            .filter_by(task_id=self.id, user_id=user_id, passed=True)
-            .first() is not None
+            Submission.query.filter_by(
+                task_id=self.id, user_id=user_id, passed=True
+            ).first()
+            is not None
         )
 
 
 class Submission(db.Model):
-    __tablename__ = 'submissions'
+    __tablename__ = "submissions"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey("tasks.id"), nullable=False)
     code = db.Column(db.Text, nullable=True)
     result = db.Column(db.Text, nullable=True)
     passed = db.Column(db.Boolean, default=False)
@@ -84,8 +115,8 @@ class Submission(db.Model):
     submitted_at = db.Column(db.DateTime, default=datetime.now)
 
 
-def _tc(cases):
-    return json.dumps([{'input': inp, 'output': out} for inp, out in cases])
+def _make_test_cases(cases):
+    return json.dumps([{"input": inp, "output": out} for inp, out in cases])
 
 
 def seed_tasks():
@@ -93,19 +124,15 @@ def seed_tasks():
         return
 
     tasks = [
-
-        # ══════════════════════════════════════════════════════════
-        # ТЕОРИЯ
-        # ══════════════════════════════════════════════════════════
         Task(
-            block='theory',
-            title='Большая цифра',
-            difficulty='hard',
+            block="theory",
+            title="Большая цифра",
+            difficulty="hard",
             order_num=1,
-            task_type='answer',
+            task_type="answer",
             attempts_limit=2,
-            expected_output='238',
-            description='''\
+            expected_output="238",
+            description="""\
 В 250-ричной системе счисления записано 12-значное число, в котором цифра X встречается
 на позициях 3, 6 и 9 (считая с конца, начиная с 1):
 
@@ -118,30 +145,28 @@ def seed_tasks():
 Внимание: только 2 попытки!
 
 Введи единственное число — ответ.
-''',
+""",
         ),
-
-        # ══════════════════════════════════════════════════════════
-        # АЛГОРИТМЫ
-        # ══════════════════════════════════════════════════════════
         Task(
-            block='algorithms',
-            title='Архиватор битовых строк',
-            difficulty='medium',
+            block="algorithms",
+            title="Архиватор битовых строк",
+            difficulty="medium",
             order_num=1,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                ('00011000',  '3 2 3'),
-                ('1110',      '0 3 1'),
-                ('0',         '1'),
-                ('10101',     '0 1 1 1 1 1'),
-                ('000',       '3'),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("00011000", "3 2 3"),
+                    ("1110", "0 3 1"),
+                    ("0", "1"),
+                    ("10101", "0 1 1 1 1 1"),
+                    ("000", "3"),
+                ]
+            ),
+            description="""\
 Реализуй архиватор битовых строк на основе кодирования длин серий (RLE).
 
 Входная строка состоит только из символов '0' и '1'. Архив — список длин
@@ -158,27 +183,28 @@ def seed_tasks():
   Ввод: 00011000   Вывод: 3 2 3
   Ввод: 1110        Вывод: 0 3 1
   Ввод: 0            Вывод: 1
-''',
+""",
         ),
-
         Task(
-            block='algorithms',
-            title='Алиса и ловля насекомых',
-            difficulty='hard',
+            block="algorithms",
+            title="Алиса и ловля насекомых",
+            difficulty="hard",
             order_num=2,
-            task_type='python',
-            time_limit='2 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                ('4\n3 9 1 2', '11'),
-                ('2\n5 3',     '5'),
-                ('1\n7',       '7'),
-                ('6\n1 2 3 4 5 6', '12'),
-                ('4\n1 1 1 1',     '2'),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="2 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("4\n3 9 1 2", "11"),
+                    ("2\n5 3", "5"),
+                    ("1\n7", "7"),
+                    ("6\n1 2 3 4 5 6", "12"),
+                    ("4\n1 1 1 1", "2"),
+                ]
+            ),
+            description="""\
 N насекомых расположены в ряд, у каждого своя ценность. Алиса и Боб
 по очереди ловят насекомых (Алиса ходит первой). В каждый ход игрок
 берёт насекомое с любого конца ряда. Оба играют оптимально — каждый
@@ -196,27 +222,28 @@ N насекомых расположены в ряд, у каждого сво�
   Ввод:        Вывод:
   4            11
   3 9 1 2
-''',
+""",
         ),
-
         Task(
-            block='algorithms',
-            title='Винни-Пух и шарики',
-            difficulty='medium',
+            block="algorithms",
+            title="Винни-Пух и шарики",
+            difficulty="medium",
             order_num=3,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                ('3\n3 2 1', 'YES'),
-                ('2\n4 1',   'NO'),
-                ('1\n1',     'YES'),
-                ('3\n1 1 5', 'NO'),
-                ('4\n3 3 2 2', 'YES'),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("3\n3 2 1", "YES"),
+                    ("2\n4 1", "NO"),
+                    ("1\n1", "YES"),
+                    ("3\n1 1 5", "NO"),
+                    ("4\n3 3 2 2", "YES"),
+                ]
+            ),
+            description="""\
 Винни-Пух хочет расставить шарики K цветов в ряд так, чтобы никакие два
 соседних шарика не были одного цвета. Известно количество шариков каждого цвета.
 
@@ -232,27 +259,28 @@ N насекомых расположены в ряд, у каждого сво�
 Примеры:
   Ввод: 3 / 3 2 1  →  YES
   Ввод: 2 / 4 1    →  NO
-''',
+""",
         ),
-
         Task(
-            block='algorithms',
-            title='Бизнес-центр',
-            difficulty='hard',
+            block="algorithms",
+            title="Бизнес-центр",
+            difficulty="hard",
             order_num=4,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                ('3\n0 30\n5 10\n15 20', '2'),
-                ('3\n7 10\n2 4\n0 1',    '1'),
-                ('2\n1 5\n2 6',          '2'),
-                ('1\n0 100',             '1'),
-                ('4\n1 4\n2 5\n7 9\n3 6', '3'),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("3\n0 30\n5 10\n15 20", "2"),
+                    ("3\n7 10\n2 4\n0 1", "1"),
+                    ("2\n1 5\n2 6", "2"),
+                    ("1\n0 100", "1"),
+                    ("4\n1 4\n2 5\n7 9\n3 6", "3"),
+                ]
+            ),
+            description="""\
 В бизнес-центре проводятся N совещаний. Каждое совещание занимает переговорную
 от времени start до времени end (включительно). Совещания, начинающиеся в момент
 освобождения комнаты, могут её использовать.
@@ -272,41 +300,37 @@ N насекомых расположены в ряд, у каждого сво�
   0 30
   5 10
   15 20
-''',
+""",
         ),
-
-        # ══════════════════════════════════════════════════════════
-        # ДАННЫЕ
-        # ══════════════════════════════════════════════════════════
         Task(
-            block='data',
-            title='Внедрённые внедрения',
-            difficulty='medium',
+            block="data",
+            title="Внедрённые внедрения",
+            difficulty="medium",
             order_num=1,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                (
-                    "3\nHello world\nSELECT * FROM users WHERE id='1' OR 1=1\nTest",
-                    '1'
-                ),
-                (
-                    "4\nDROP TABLE users;\nnormal text\nUNION SELECT password FROM users\nalice@example.com",
-                    '2'
-                ),
-                (
-                    "2\nSELECT name FROM products\nINSERT INTO log VALUES (1)",
-                    '2'
-                ),
-                (
-                    "1\nsafe input only",
-                    '0'
-                ),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    (
+                        "3\nHello world\nSELECT * FROM users WHERE id='1' OR 1=1\nTest",
+                        "1",
+                    ),
+                    (
+                        "4\nDROP TABLE users;\nnormal text\n"
+                        "UNION SELECT password FROM users\nalice@example.com",
+                        "2",
+                    ),
+                    (
+                        "2\nSELECT name FROM products\nINSERT INTO log VALUES (1)",
+                        "2",
+                    ),
+                    ("1\nsafe input only", "0"),
+                ]
+            ),
+            description="""\
 Система безопасности проверяет входящие строки на SQL-инъекции.
 Строка считается опасной, если она содержит хотя бы одно из ключевых слов
 (без учёта регистра):
@@ -328,17 +352,16 @@ N насекомых расположены в ряд, у каждого сво�
   Hello world
   SELECT * FROM users WHERE id=\'1\' OR 1=1
   Test
-''',
+""",
         ),
-
         Task(
-            block='data',
-            title='Склонированные клоны',
-            difficulty='medium',
+            block="data",
+            title="Склонированные клоны",
+            difficulty="medium",
             order_num=2,
-            task_type='sql',
-            expected_output='group by name, birth_date having count',
-            description='''\
+            task_type="sql",
+            expected_output="group by name, birth_date having count",
+            description="""\
 В базе данных есть таблица users со столбцами: id, name, birth_date.
 
 Некоторые пользователи были случайно продублированы при импорте данных —
@@ -353,38 +376,27 @@ N насекомых расположены в ряд, у каждого сво�
 Отсортируй по cnt DESC.
 
 Подсказка: используй GROUP BY ... HAVING COUNT(*) > 1.
-''',
+""",
         ),
-
         Task(
-            block='data',
-            title='Вездесущая чашка',
-            difficulty='easy',
+            block="data",
+            title="Вездесущая чашка",
+            difficulty="easy",
             order_num=3,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                (
-                    '4\nalice 09:15\nbob 09:42\nalice 14:30\nbob 09:58',
-                    '9'
-                ),
-                (
-                    '2\nuser1 08:00\nuser2 08:59',
-                    '8'
-                ),
-                (
-                    '5\na 23:00\nb 23:59\nc 00:01\nd 23:30\ne 23:10',
-                    '23'
-                ),
-                (
-                    '1\nonly 12:00',
-                    '12'
-                ),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("4\nalice 09:15\nbob 09:42\nalice 14:30\nbob 09:58", "9"),
+                    ("2\nuser1 08:00\nuser2 08:59", "8"),
+                    ("5\na 23:00\nb 23:59\nc 00:01\nd 23:30\ne 23:10", "23"),
+                    ("1\nonly 12:00", "12"),
+                ]
+            ),
+            description="""\
 Кофейня записывает визиты клиентов. Каждая запись содержит имя клиента
 и время визита в формате ЧЧ:ММ. Найди час (0–23), в который кофейня
 была наиболее популярна (больше всего визитов). При ничьей выведи
@@ -404,30 +416,28 @@ N насекомых расположены в ряд, у каждого сво�
   bob 09:42
   alice 14:30
   bob 09:58
-''',
+""",
         ),
-
-        # ══════════════════════════════════════════════════════════
-        # БЭКЕНД
-        # ══════════════════════════════════════════════════════════
         Task(
-            block='backend',
-            title='Планеты в зоне жизни',
-            difficulty='medium',
+            block="backend",
+            title="Планеты в зоне жизни",
+            difficulty="medium",
             order_num=1,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                ('1.0 1.0',  'YES'),
-                ('4.0 1.0',  'NO'),
-                ('0.36 0.6', 'YES'),
-                ('1.0 2.0',  'NO'),
-                ('9.0 3.0',  'YES'),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    ("1.0 1.0", "YES"),
+                    ("4.0 1.0", "NO"),
+                    ("0.36 0.6", "YES"),
+                    ("1.0 2.0", "NO"),
+                    ("9.0 3.0", "YES"),
+                ]
+            ),
+            description="""\
 Зона жизни (обитаемая зона) звезды — диапазон расстояний, при котором
 на планете может существовать жидкая вода. Формулы для границ зоны:
 
@@ -448,34 +458,36 @@ N насекомых расположены в ряд, у каждого сво�
 Примеры:
   1.0 1.0  →  YES   (зона: 0.953 – 1.374 а.е.)
   4.0 1.0  →  NO    (зона: 1.905 – 2.748 а.е.)
-''',
+""",
         ),
-
         Task(
-            block='backend',
-            title='Поставщики',
-            difficulty='hard',
+            block="backend",
+            title="Поставщики",
+            difficulty="hard",
             order_num=2,
-            task_type='python',
-            time_limit='1 с',
-            memory_limit='256 МБ',
-            input_format='stdin',
-            output_format='stdout',
-            test_cases_json=_tc([
-                (
-                    '3\napple FarmA 1.50\napple FarmB 1.20\nbanana FarmC 0.80',
-                    'apple FarmB 1.20\nbanana FarmC 0.80'
-                ),
-                (
-                    '4\nrice RiceWorld 0.90\nrice BulkBuy 0.75\nrice GrainCo 0.80\nwheat GrainCo 0.60',
-                    'rice BulkBuy 0.75\nwheat GrainCo 0.60'
-                ),
-                (
-                    '1\ncarrot GardenFarm 2.00',
-                    'carrot GardenFarm 2.00'
-                ),
-            ]),
-            description='''\
+            task_type="python",
+            time_limit="1 с",
+            memory_limit="256 МБ",
+            input_format="stdin",
+            output_format="stdout",
+            test_cases_json=_make_test_cases(
+                [
+                    (
+                        "3\napple FarmA 1.50\napple FarmB 1.20\nbanana FarmC 0.80",
+                        "apple FarmB 1.20\nbanana FarmC 0.80",
+                    ),
+                    (
+                        "4\nrice RiceWorld 0.90\nrice BulkBuy 0.75\n"
+                        "rice GrainCo 0.80\nwheat GrainCo 0.60",
+                        "rice BulkBuy 0.75\nwheat GrainCo 0.60",
+                    ),
+                    (
+                        "1\ncarrot GardenFarm 2.00",
+                        "carrot GardenFarm 2.00",
+                    ),
+                ]
+            ),
+            description="""\
 Компания закупает продукты у разных поставщиков. Для каждого продукта
 нужно выбрать поставщика с наименьшей ценой.
 
@@ -495,20 +507,16 @@ N насекомых расположены в ряд, у каждого сво�
   apple FarmA 1.50    banana FarmC 0.80
   apple FarmB 1.20
   banana FarmC 0.80
-''',
+""",
         ),
-
-        # ══════════════════════════════════════════════════════════
-        # ФРОНТЕНД
-        # ══════════════════════════════════════════════════════════
         Task(
-            block='frontend',
-            title='Педантичный хомяк',
-            difficulty='medium',
+            block="frontend",
+            title="Педантичный хомяк",
+            difficulty="medium",
             order_num=1,
-            task_type='html',
-            expected_output='addeventlistener',
-            description='''\
+            task_type="html",
+            expected_output="addeventlistener",
+            description="""\
 Хомяк Хрустик очень педантичен и проверяет каждый символ формы регистрации.
 Создай HTML-страницу с формой, где хомяк (в виде сообщения об ошибке)
 критикует каждый недочёт в реальном времени.
@@ -527,10 +535,10 @@ N насекомых расположены в ряд, у каждого сво�
 
 Оцениваются: наличие addEventListener или oninput, логика проверки полей,
 динамическая блокировка кнопки.
-''',
+""",
         ),
     ]
 
-    for t in tasks:
-        db.session.add(t)
+    for task in tasks:
+        db.session.add(task)
     db.session.commit()

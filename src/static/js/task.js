@@ -20,6 +20,41 @@
         btn.textContent = open ? 'Скрыть код' : 'Показать код';
     };
 
+    window.triggerFileUpload = function () {
+        document.getElementById('fileUploadInput').click();
+    };
+
+    window.handleFileUpload = function (input) {
+        var file = input.files[0];
+        if (!file) return;
+
+        var label = document.getElementById('uploadLabel');
+        if (label) label.textContent = 'Загрузка...';
+
+        var formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/api/v1/upload-code', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(function (res) { return res.json(); })
+            .then(function (d) {
+                if (d.error) {
+                    alert('Ошибка: ' + d.error);
+                } else {
+                    document.getElementById('codeInput').value = d.content;
+                    if (label) label.textContent = '📎 ' + d.filename;
+                }
+            })
+            .catch(function (e) {
+                alert('Ошибка загрузки файла: ' + e.message);
+            })
+            .finally(function () {
+                input.value = '';
+            });
+    };
+
     window.submitSolution = async function () {
         var code = document.getElementById('codeInput').value.trim();
         if (!code) {
@@ -41,7 +76,7 @@
             var res = await fetch('/api/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ task_id: TASK_ID, code: code })
+                body: JSON.stringify({ task_id: TASK_ID, code: code }),
             });
             var d = await res.json();
 
@@ -67,7 +102,10 @@
                 btnText.textContent = 'Отправить решение';
                 var spinner = document.getElementById('btnIcon');
                 if (spinner && spinner.className === 'spinner') {
-                    spinner.outerHTML = '<svg id="btnIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                    spinner.outerHTML =
+                        '<svg id="btnIcon" width="17" height="17" viewBox="0 0 24 24"' +
+                        ' fill="none" stroke="currentColor" stroke-width="2">' +
+                        '<path d="M5 12h14M12 5l7 7-7 7"/></svg>';
                 }
             }
         }
@@ -83,7 +121,8 @@
         verdict.className = 'result-verdict ' + (passed ? 'pass' : 'fail');
         verdict.textContent = message;
         scoreEl.textContent = score !== undefined ? score + '/100 баллов' : '';
-        out.textContent = output || (passed ? 'Все тесты пройдены!' : 'Проверьте правильность решения');
+        out.textContent =
+            output || (passed ? 'Все тесты пройдены!' : 'Проверьте правильность решения');
         panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
@@ -92,7 +131,8 @@
         codeInput.addEventListener('keydown', function (e) {
             if (e.key === 'Tab') {
                 e.preventDefault();
-                var s = this.selectionStart, end = this.selectionEnd;
+                var s = this.selectionStart;
+                var end = this.selectionEnd;
                 this.value = this.value.substring(0, s) + '    ' + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = s + 4;
             }
