@@ -1,4 +1,4 @@
-# AreteLMS
+<img width="1857" height="962" alt="image" src="https://github.com/user-attachments/assets/322d7cbd-0f83-4e32-8c82-652a52d1bc02" /># AreteLMS
 
 Система управления обучением со встроенным проверяющим кодом. Пользователи регистрируются, просматривают блоки задач, отправляют решения на Python, SQL или HTML и отслеживают прогресс по пяти тематическим разделам.
 
@@ -11,6 +11,12 @@
 - **Хэширование паролей:** Werkzeug `generate_password_hash` / `check_password_hash`
 - **Фронтенд:** шаблоны Jinja2, HTML5/CSS3 + Boostrap/JS
 - **Запуск кода:** `subprocess` с таймаутом
+
+## Скриншоты
+<img width="1860" height="962" alt="image" src="https://github.com/user-attachments/assets/27629b80-e36a-4aa0-92db-1ee8c6b342f8" />
+<img width="1858" height="963" alt="image" src="https://github.com/user-attachments/assets/9617840d-1d63-418c-a3e5-973efb2fb1cf" />
+<img width="1857" height="962" alt="image" src="https://github.com/user-attachments/assets/a7067cea-2fb2-47e7-9a27-24d4f4203a41" />
+<img width="1857" height="960" alt="image" src="https://github.com/user-attachments/assets/e8bcc733-6a51-4b84-8064-106888458a83" />
 
 ## Структура проекта
 
