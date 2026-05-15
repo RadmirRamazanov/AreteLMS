@@ -354,10 +354,12 @@ main { padding-top: 70px; }
     font-size: 0.65rem; font-weight: 600;
     border: 1px solid transparent;
 }
-.b-python { background: rgba(139,92,246,0.1); color: #c4b5fd; border-color: rgba(139,92,246,0.2); }
-.b-sql    { background: rgba(245,158,11,0.1); color: #fcd34d; border-color: rgba(245,158,11,0.2); }
-.b-html   { background: rgba(249,115,22,0.1); color: #fdba74; border-color: rgba(249,115,22,0.2); }
-.b-answer { background: rgba(34,197,94,0.08); color: #6ee7b7; border-color: rgba(34,197,94,0.2); }
+.b-python   { background: rgba(139,92,246,0.12); color: #c4b5fd; border-color: rgba(139,92,246,0.25); }
+.b-sql      { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+.b-html     { background: rgba(249,115,22,0.12); color: #fdba74; border-color: rgba(249,115,22,0.25); }
+.b-frontend { background: rgba(236,72,153,0.12); color: #f9a8d4; border-color: rgba(236,72,153,0.28); box-shadow: 0 0 10px rgba(236,72,153,0.06); }
+.b-backend  { background: rgba(6,182,212,0.12); color: #67e8f9; border-color: rgba(6,182,212,0.28); box-shadow: 0 0 10px rgba(6,182,212,0.06); }
+.b-answer   { background: rgba(34,197,94,0.1); color: #6ee7b7; border-color: rgba(34,197,94,0.22); }
 .b-easy   { background: rgba(34,197,94,0.07); color: #4ade80; border-color: rgba(34,197,94,0.12); }
 .b-medium { background: rgba(245,158,11,0.07); color: #fbbf24; border-color: rgba(245,158,11,0.12); }
 .b-hard   { background: rgba(239,68,68,0.07); color: #f87171; border-color: rgba(239,68,68,0.12); }
@@ -608,7 +610,8 @@ main { padding-top: 70px; }
                                 <span class="badge b-{{ t.task_type }}">
                                     {% if t.task_type == 'python' %}🐍 Python
                                     {% elif t.task_type == 'sql' %}🗄 SQL
-                                    {% elif t.task_type == 'html' %}🌐 HTML/JS
+                                    {% elif t.task_type == 'backend' %}🔧 Backend
+                                    {% elif t.task_type in ('html', 'frontend') %}🎨 Frontend
                                     {% elif t.task_type == 'answer' %}💡 Ответ
                                     {% else %}{{ t.task_type }}{% endif %}
                                 </span>

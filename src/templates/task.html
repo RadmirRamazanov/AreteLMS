@@ -90,10 +90,12 @@
             padding: 0.2rem 0.65rem; border-radius: 7px; font-size: 0.75rem; font-weight: 600;
             border: 1px solid transparent;
         }
-        .badge-type-python { background: rgba(139,92,246,0.1); color: #c4b5fd; border-color: rgba(139,92,246,0.25); }
-        .badge-type-sql    { background: rgba(245,158,11,0.1);  color: #fbbf24; border-color: rgba(245,158,11,0.25); }
-        .badge-type-html   { background: rgba(249,115,22,0.1);  color: #fb923c; border-color: rgba(249,115,22,0.25); }
-        .badge-type-answer { background: rgba(34,197,94,0.1);   color: #4ade80; border-color: rgba(34,197,94,0.25); }
+        .badge-type-python   { background: rgba(139,92,246,0.12); color: #c4b5fd; border-color: rgba(139,92,246,0.28); }
+        .badge-type-sql      { background: rgba(245,158,11,0.12); color: #fbbf24; border-color: rgba(245,158,11,0.28); }
+        .badge-type-html     { background: rgba(249,115,22,0.12); color: #fb923c; border-color: rgba(249,115,22,0.28); }
+        .badge-type-frontend { background: rgba(236,72,153,0.12); color: #f9a8d4; border-color: rgba(236,72,153,0.3); box-shadow: 0 0 12px rgba(236,72,153,0.08); }
+        .badge-type-backend  { background: rgba(6,182,212,0.12); color: #67e8f9; border-color: rgba(6,182,212,0.3); box-shadow: 0 0 12px rgba(6,182,212,0.08); }
+        .badge-type-answer   { background: rgba(34,197,94,0.12); color: #4ade80; border-color: rgba(34,197,94,0.28); }
         .badge-easy   { background: rgba(34,197,94,0.08);  color: #4ade80; border-color: rgba(34,197,94,0.15); }
         .badge-medium { background: rgba(245,158,11,0.08); color: #fbbf24; border-color: rgba(245,158,11,0.15); }
         .badge-hard   { background: rgba(239,68,68,0.08);  color: #f87171; border-color: rgba(239,68,68,0.15); }
@@ -275,7 +277,8 @@
                     <span class="badge badge-type-{{ task.task_type }}">
                         {% if task.task_type == 'python' %}🐍 Python
                         {% elif task.task_type == 'sql' %}🗄️ SQL
-                        {% elif task.task_type == 'html' %}🌐 HTML/JS
+                        {% elif task.task_type == 'backend' %}🔧 Backend
+                        {% elif task.task_type in ('html', 'frontend') %}🎨 Frontend
                         {% elif task.task_type == 'answer' %}💡 Ответ
                         {% else %}{{ task.task_type }}{% endif %}
                     </span>
@@ -334,7 +337,7 @@
         {% endif %}
 
         <!-- Description -->
-        <div class="task-description">{{ task.description }}</div>
+        <div class="task-description">{{ task.description | safe }}</div>
     </div>
 
     <!-- Attempts Info -->
@@ -358,7 +361,8 @@
             <span class="editor-toolbar-label">
                 {% if task.task_type == 'python' %}Ваш код (Python)
                 {% elif task.task_type == 'sql' %}Ваш SQL-запрос
-                {% elif task.task_type == 'html' %}Ваш HTML/CSS/JS код
+                {% elif task.task_type == 'backend' %}Код REST-сервиса (Flask / FastAPI / aiohttp)
+                {% elif task.task_type in ('html', 'frontend') %}Ваш HTML/CSS/JS код
                 {% elif task.task_type == 'answer' %}Ваш ответ
                 {% else %}Решение{% endif %}
             </span>
@@ -388,7 +392,8 @@
                 <span class="editor-filename">
                     {% if task.task_type == 'python' %}solution.py
                     {% elif task.task_type == 'sql' %}query.sql
-                    {% elif task.task_type == 'html' %}index.html
+                    {% elif task.task_type == 'backend' %}app.py
+                    {% elif task.task_type in ('html', 'frontend') %}index.html
                     {% elif task.task_type == 'answer' %}answer.txt
                     {% else %}solution{% endif %}
                 </span>
@@ -402,7 +407,13 @@ def solve():
     pass
 
 solve(){% elif task.task_type == 'sql' %}-- SQL-запрос здесь...
-SELECT ...{% elif task.task_type == 'html' %}<!-- HTML-код здесь -->
+SELECT ...{% elif task.task_type == 'backend' %}# REST API (Flask / FastAPI / aiohttp)
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/planets', methods=['POST'])
+def create_planet():
+    ...{% elif task.task_type in ('html', 'frontend') %}<!-- HTML-код здесь -->
 <!DOCTYPE html>
 <html lang="ru">
 <head><meta charset="UTF-8"><title>...</title></head>
