@@ -1,6 +1,6 @@
 # AreteLMS
 
-Система управления обучением со встроенным проверяющим кодом. Пользователи регистрируются, просматривают блоки задач, отправляют решения на Python, SQL или HTML и отслеживают прогресс по пяти тематическим разделам.
+AreteLMS - это LMS, где пользователи учатся программированию не через долгие лекции, а через решение множества задач с автоматической проверкой. Платформа включает в себя пять учебных блоков (теория, алгоритмы, данные, бэкенд, фронтенд), помогает отслеживать прогресс и целенаправленно готовит участников к олимпиадам по промышленному программированию(Высшая проба, PROD).
 
 ## Стек
 
@@ -14,7 +14,7 @@
 
 ## Скриншоты
 <img width="1860" height="962" alt="image" src="https://github.com/user-attachments/assets/27629b80-e36a-4aa0-92db-1ee8c6b342f8" />
-<img width="1858" height="963" alt="image" src="https://github.com/user-attachments/assets/9617840d-1d63-418c-a3e5-973efb2fb1cf" />
+<img width="1898" height="933" alt="image" src="https://github.com/user-attachments/assets/71006302-da3c-4e32-9fd2-7a0226f58b70" />
 <img width="1857" height="962" alt="image" src="https://github.com/user-attachments/assets/a7067cea-2fb2-47e7-9a27-24d4f4203a41" />
 <img width="1857" height="960" alt="image" src="https://github.com/user-attachments/assets/e8bcc733-6a51-4b84-8064-106888458a83" />
 
@@ -26,6 +26,7 @@ arete-lms/
 ├── config.py           # Все константы конфигурации, читаются из env
 ├── models.py           # Модели SQLAlchemy: User, Task, Submission; словарь BLOCKS; seed_tasks()
 ├── services.py         # SubmissionEvaluator — запуск и проверка решений
+├── tasks.py            # Все условия, данные, тесты о задачах
 ├── routes/
 │   ├── __init__.py
 │   ├── api.py          # Blueprint REST API, префикс /api
@@ -34,8 +35,7 @@ arete-lms/
 ├── static/
 │   ├── css/            # Стили по страницам
 │   └── js/             # Скрипты по страницам
-├── instance/           # Файл SQLite БД — создаётся при запуске, не коммитится
-└── requirements.txt
+└── instance/           # Файл SQLite БД — создаётся при запуске, не коммитится
 ```
 
 ## Маршруты
